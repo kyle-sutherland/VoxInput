@@ -31,32 +31,19 @@ VoxInput is meant to be used with [LocalAI](https://localai.io), but it will fun
 
 Note that the VoxInput env vars take precedence over the OpenAI ones.
 
-Unless you don't mind running VoxInput as root, you also need to ensure the following is setup for `ydotool`:
-
 - The `ydotoold` daemon must be running (typically started as a systemd service)
-- Your user is in the `input` user group
-- You have the following udev rule
-
-```
-KERNEL=="uinput", GROUP="input", MODE="0620", OPTIONS+="static_node=uinput"
-```
-
-This can be set in your NixOS config as follows:
-```nix
-services.udev.extraRules = ''
-KERNEL=="uinput", GROUP="input", MODE="0620", OPTIONS+="static_node=uinput"
-'';
-```
 
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/richiejp/VoxInput.git
    cd VoxInput
    ```
 
 2. Build the project:
+
    ```bash
    go build -o voxinput
    ```
@@ -82,31 +69,37 @@ The pop-up window showing when recording has begun can be disabled by setting `V
 ### Commands
 
 - **`listen`**: Starts the speech-to-text daemon.
+
   ```bash
   ./voxinput listen
   ```
 
 - **`record`**: Sends a signal to the daemon to start recording audio then exits. In realtime mode this will start transcription.
+
   ```bash
   ./voxinput record
   ```
 
 - **`write`** or **`stop`**: Sends a signal to the daemon to stop recording. When not in realtime mode this triggers transcription.
+
   ```bash
   ./voxinput write
   ```
 
 - **`toggle`**: Toggle recording on/off (start recording if idle, stop if recording). Only works in realtime mode.
+
   ```bash
   ./voxinput toggle
   ```
 
 - **`status`**: Show whether the server is listening and if it's currently recording. Only works in realtime mode.
+
   ```bash
   ./voxinput status
   ```
 
 - **`help`**: Displays help information.
+
   ```bash
   ./voxinput help
   ```
@@ -114,11 +107,13 @@ The pop-up window showing when recording has begun can be disabled by setting `V
 ### Example Realtime Workflow
 
 1. Start the daemon in a terminal window:
+
    ```bash
    OPENAI_BASE_URL=http://ai.local:8081/v1 OPENAI_WS_BASE_URL=ws://ai.local:8081/v1/realtime ./voxinput listen
    ```
 
 2. Select a text box you want to speak into and use a global shortcut to run the following
+
    ```bash
    ./voxinput record
    ```
@@ -126,6 +121,7 @@ The pop-up window showing when recording has begun can be disabled by setting `V
 3. Begin speaking, when you pause for a second or two your speach will be transcribed and typed into the active application.
 
 4. Send a signal to stop recording
+
    ```bash
    ./voxinput stop
    ```
@@ -133,16 +129,19 @@ The pop-up window showing when recording has begun can be disabled by setting `V
 ### Example Workflow
 
 1. Start the daemon in a terminal window:
+
    ```bash
    OPENAI_BASE_URL=http://ai.local:8081/v1 ./voxinput listen --no-realtime
    ```
 
 2. Select a text box you want to speak into and use a global shortcut to run the following
+
    ```bash
    ./voxinput record
    ```
 
 3. After speaking, send a signal to stop recording and transcribe:
+
    ```bash
    ./voxinput write
    ```
@@ -151,13 +150,13 @@ The pop-up window showing when recording has begun can be disabled by setting `V
 
 ### Quick start with LocalAI
 
-1. Follow https://localai.io/installation/ to install LocalAI, the simplest way is using Docker:
+1. Follow <https://localai.io/installation/> to install LocalAI, the simplest way is using Docker:
 
 ```bash
 docker run -p 8080:8080 --name local-ai -ti localai/localai:latest
 ```
 
-2. Open http://localhost:8080 in your browser to access the LocalAI web interface and install the whisper-1 and silero-vad-ggml models.
+2. Open <http://localhost:8080> in your browser to access the LocalAI web interface and install the whisper-1 and silero-vad-ggml models.
 
 3. Test out VoxInput:
 
