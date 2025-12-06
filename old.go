@@ -166,27 +166,27 @@ Listen:
 
 		log.Println("main: transcribed text: ", resp.Text)
 
-		dotool := exec.Command("dotool")
-		stdin, err := dotool.StdinPipe()
+		ydotool := exec.Command("ydotool", "type", "-f", "-")
+		stdin, err := ydotool.StdinPipe()
 		if err != nil {
-			log.Println("main: ", fmt.Errorf("dotool stdin pipe: %w", err))
+			log.Println("main: ", fmt.Errorf("ydotool stdin pipe: %w", err))
 		}
-		dotool.Stderr = os.Stderr
-		if err := dotool.Start(); err != nil {
-			log.Println("main: ", fmt.Errorf("dotool start: %w", err))
+		ydotool.Stderr = os.Stderr
+		if err := ydotool.Start(); err != nil {
+			log.Println("main: ", fmt.Errorf("ydotool start: %w", err))
 		}
 
-		_, err = io.WriteString(stdin, fmt.Sprintf("type %s", resp.Text))
+		_, err = io.WriteString(stdin, resp.Text)
 		if err != nil {
-			log.Println("main: ", fmt.Errorf("dotool stdin WriteString: %w", err))
+			log.Println("main: ", fmt.Errorf("ydotool stdin WriteString: %w", err))
 		}
 
 		if err := stdin.Close(); err != nil {
-			log.Println("main: close dotool stdin: ", err)
+			log.Println("main: close ydotool stdin: ", err)
 		}
 
-		if err := dotool.Wait(); err != nil {
-			log.Println("main: dotool wait: ", err)
+		if err := ydotool.Wait(); err != nil {
+			log.Println("main: ydotool wait: ", err)
 		}
 	}
 }

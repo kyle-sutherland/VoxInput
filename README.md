@@ -1,5 +1,7 @@
 # VoxInput
 
+**Note: This is a fork of [richiejp/VoxInput](https://github.com/richiejp/VoxInput) that uses `ydotool` instead of `dotool` for better Wayland compatibility.**
+
 Transcribe input from your microphone and turn it into key presses on a virtual keyboard. This allows you to use speech-to-text on any application or window system in Linux. In fact you can use it on the system console.
 
 <p align="center">
@@ -13,7 +15,7 @@ VoxInput is meant to be used with [LocalAI](https://localai.io), but it will fun
 - **Speech-to-Text Daemon**: Runs as a background process to listen for signals to start or stop recording audio.
 - **Audio Capture and Playback**: Records audio from the microphone and plays it back for verification.
 - **Transcription**: Converts recorded audio into text using a local or remote transcription service.
-- **Text Automation**: Simulates typing the transcribed text into an application using [`dotool`](https://git.sr.ht/~geb/dotool).
+- **Text Automation**: Simulates typing the transcribed text into an application using [`ydotool`](https://github.com/ReimuNotMoe/ydotool).
 - **Voice Activity Detection**: In realtime mode VoxInput uses VAD to detect speech segments and automatically transcribe them.
 - **Visual Notification**: In realtime mode, a GUI notification informs you when recording (VAD) has started or stopped.
 
@@ -21,7 +23,7 @@ VoxInput is meant to be used with [LocalAI](https://localai.io), but it will fun
 
 ## Requirements
 
-- `dotool` (for simulating keyboard input)
+- `ydotool` (for simulating keyboard input)
 - `OPENAI_API_KEY` or `VOXINPUT_API_KEY`: Your OpenAI API key for Whisper transcription. If you have a local instance with no key, then just leave it unset.
 - `OPENAI_BASE_URL` or `VOXINPUT_BASE_URL`: The base URL of the OpenAI compatible API server: defaults to `http://localhost:8080/v1`
 - `OPENAI_WS_BASE_URL` or `VOXINPUT_WS_BASE_URL`: The base URL of the realtime websocket API: defaults to `ws://localhost:8080/v1/realtime`
@@ -29,8 +31,9 @@ VoxInput is meant to be used with [LocalAI](https://localai.io), but it will fun
 
 Note that the VoxInput env vars take precedence over the OpenAI ones.
 
-Unless you don't mind running VoxInput as root, then you also need to ensure the following is setup for `dotool`
+Unless you don't mind running VoxInput as root, you also need to ensure the following is setup for `ydotool`:
 
+- The `ydotoold` daemon must be running (typically started as a systemd service)
 - Your user is in the `input` user group
 - You have the following udev rule
 
@@ -38,7 +41,7 @@ Unless you don't mind running VoxInput as root, then you also need to ensure the
 KERNEL=="uinput", GROUP="input", MODE="0620", OPTIONS+="static_node=uinput"
 ```
 
-This can be set in your NixOS config as follows
+This can be set in your NixOS config as follows:
 ```nix
 services.udev.extraRules = ''
 KERNEL=="uinput", GROUP="input", MODE="0620", OPTIONS+="static_node=uinput"
@@ -58,7 +61,7 @@ KERNEL=="uinput", GROUP="input", MODE="0620", OPTIONS+="static_node=uinput"
    go build -o voxinput
    ```
 
-3. Ensure `dotool` is installed on your system and it can make key presses.
+3. Ensure `ydotool` is installed on your system and the `ydotoold` daemon is running.
 
 4. It makes sense to bind the `record` and `write` commands to keys using your window manager. For instance in my Sway config I have the following
 
@@ -195,7 +198,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - [malgo](https://github.com/gen2brain/malgo) for audio handling.
 - [go-openai](https://github.com/sashabaranov/go-openai) for OpenAI API integration.
-- [numen](https://git.sr.ht/~geb/numen) and dotool, I did consider modifying numen to use LocalAI, but decided to go with a new tool for now.
+- [ydotool](https://github.com/ReimuNotMoe/ydotool) for keyboard input simulation with Wayland compatibility.
 
 ---
 

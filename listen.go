@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -326,39 +325,39 @@ Listen:
 
 				log.Println("main: received transcribed text: ", text)
 
-				dotool := exec.CommandContext(ctx, "dotool")
-				stdin, err := dotool.StdinPipe()
+				ydotool := exec.CommandContext(ctx, "ydotool", "type", "-f", "-")
+				stdin, err := ydotool.StdinPipe()
 				if err != nil {
-					errCh <- fmt.Errorf("dotool stdin pipe: %w", err)
+					errCh <- fmt.Errorf("ydotool stdin pipe: %w", err)
 					cancel()
 					return
 				}
-				dotool.Stderr = os.Stderr
+				ydotool.Stderr = os.Stderr
 
-				if err := dotool.Start(); err != nil {
-					errCh <- fmt.Errorf("dotool stderr pipe: %w", err)
+				if err := ydotool.Start(); err != nil {
+					errCh <- fmt.Errorf("ydotool start: %w", err)
 					cancel()
 					return
 				}
 
-				_, err = io.WriteString(stdin, fmt.Sprintf("type %s ", text))
+				_, err = stdin.Write([]byte(text + " "))
 				if err != nil {
-					errCh <- fmt.Errorf("dotool stdin WriteString: %w", err)
+					errCh <- fmt.Errorf("ydotool stdin write: %w", err)
 					cancel()
 					return
 				}
 
 				if err := stdin.Close(); err != nil {
-					errCh <- fmt.Errorf("close dotool stdin: %w", err)
+					errCh <- fmt.Errorf("close ydotool stdin: %w", err)
 					cancel()
 					return
 				}
 
-				if err := dotool.Wait(); err != nil {
+				if err := ydotool.Wait(); err != nil {
 					if errors.Is(err, context.Canceled) {
 						return
 					}
-					errCh <- fmt.Errorf("dotool wait: %w", err)
+					errCh <- fmt.Errorf("ydotool wait: %w", err)
 					cancel()
 					return
 				}

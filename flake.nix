@@ -23,7 +23,7 @@
               go-tools
 
               libpulseaudio
-              dotool
+              ydotool
 
               libGL pkg-config xorg.libX11.dev xorg.libXcursor xorg.libXi xorg.libXinerama xorg.libXrandr xorg.libXxf86vm libxkbcommon wayland
             ];
@@ -56,7 +56,7 @@
             # Include runtime dependencies
             buildInputs = with pkgs; [
               libpulseaudio
-              dotool
+              ydotool
 
               libGL xorg.libX11.dev xorg.libXcursor xorg.libXi xorg.libXinerama xorg.libXrandr xorg.libXxf86vm libxkbcommon wayland
             ];
@@ -66,7 +66,7 @@
             ''
             + lib.optionalString stdenv.hostPlatform.isLinux ''
               wrapProgram $out/bin/voxinput \
-                --prefix PATH : ${lib.makeBinPath [ pkgs.dotool ]}
+                --prefix PATH : ${lib.makeBinPath [ pkgs.ydotool ]}
               mkdir -p $out/lib/udev/rules.d
               echo 'KERNEL=="uinput", GROUP="input", MODE="0620", OPTIONS+="static_node=uinput"' > $out/lib/udev/rules.d/99-voxinput.rules
             '';
